@@ -5,5 +5,7 @@ A simple interactive script to download the Brave (stable/beta/nightly) repo and
 
 Usage:
 ```
-curl -sSL https://github.com/trytomakeyouprivate/braveinstall-fedora-atomic/raw/main/braveinstall | bash
+curl -sSL https://github.com/trytomakeyouprivate/braveinstall-fedora-atomic/raw/main/braveinstall
+chmod +x braveinstall
+./braveinstall
 ```
