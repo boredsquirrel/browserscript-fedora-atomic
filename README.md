@@ -22,15 +22,15 @@ Repo and Key downloaded.
 installing...
 ```
 ### Details
-Brave has [three different repositories for Stable, Beta and Nightly.](https://brave.com/linux/#release-channel-installation), but only two different PGP signing keys!
+Brave has [three different repositories for Stable, Beta and Nightly.](https://brave.com/linux/#release-channel-installation), but only two different PGP verification key files! (one has two keys inside)
 
 The repositories are downloaded to `/etc/yum.repos.d/` and the keys to `/etc/pki/rpm-gpg/`. That way you will always download official versions of Brave.
 
 In the end an `rpm-ostree install` command layers Brave to your system, but the script also works on traditional Fedora and you can just install it manually:
 
 ```
-dnf install brave-browser
+sudo dnf install brave-browser
 #or brave-browser-beta or brave-browser-nightly
 ```
 
-Using Chromium Browsers on Linux is recommended for security reasons, as the native versions utilize Sandboxes to isolate every Website from another and your OS. They are more secure than Firefox, and Flatpak browsers have these sandboxes removed, as the entire browser is isolated using `bubblewrap`. This weakens the security of their builtin Chromium, which is now the same version as on ChromeOS. Brave meanwhile is the only Chromium Browser that is degoogled (like ungoogled Chromium) **and** privacy friendly (fingerprint protection etc.) out of the box.
+Using Chromium Browsers on Linux is recommended for security reasons, as the native versions utilize Sandboxes to isolate every Website from another and your OS. They are more secure than Firefox, and Flatpak browsers have these sandboxes removed, as the entire browser is sandboxed using `bubblewrap`. This weakens the security of their builtin ones, and Chromium is now the same version as on ChromeOS. Brave meanwhile is the only Chromium Browser that is degoogled (like ungoogled Chromium) **and** privacy friendly (fingerprint protection etc.) out of the box.
