@@ -34,3 +34,5 @@ sudo dnf install brave-browser
 ```
 
 Using Chromium Browsers on Linux is recommended for security reasons, as the native versions utilize Sandboxes to isolate every Website from another and your OS. They are more secure than Firefox, and Flatpak browsers have these sandboxes removed, as the entire browser is sandboxed using `bubblewrap`. This weakens the security of their builtin ones, and Chromium is now the same version as on ChromeOS. Brave meanwhile is the only Chromium Browser that is degoogled (like ungoogled Chromium) **and** privacy friendly (fingerprint protection etc.) out of the box.
+
+[I dont recommend to use Braves Crypto Stuff](https://www.spacebar.news/stop-using-brave-browser/), so make sure to disable BAT, Wallet and more via a policy or `brave:flags`
