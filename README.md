@@ -5,7 +5,7 @@ A simple interactive script to download the Brave (stable/beta/nightly) reposito
 
 Usage:
 ```
-curl -sSLO https://github.com/trytomakeyouprivate/braveinstall-fedora-atomic/raw/main/braveinstall
+curl -sSLO https://github.com/boredsquirrel/braveinstall-fedora-atomic/raw/main/braveinstall
 chmod +x braveinstall
 ./braveinstall
 ```
@@ -13,7 +13,7 @@ chmod +x braveinstall
 example output:
 
 ```
-user@PC:/var/home/user$ curl -sSLO https://github.com/trytomakeyouprivate/braveinstall-fedora-atomic/raw/main/braveinstall
+$ curl -sSLO https://github.com/boredsquirrel/braveinstall-fedora-atomic/raw/main/braveinstall
 chmod +x braveinstall
 ./braveinstall
 Which version of Brave do you want to install? (stable/beta/nightly): stable
