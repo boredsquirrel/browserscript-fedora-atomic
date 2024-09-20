@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# this script installs Brave Repo and GPG key or the Vivaldi Repo interactively,
+# sets their permissions to chown root:root and write-protected,
+# and installs Brave stable, beta, nightly or Vivaldi using rpm-ostree
+
+# I silenced all error messages as there where plenty of them. But the commands are all chained together, so if one fails, all fail
+
+BRAVE-BASEURL="https://brave-browser-rpm-release.s3.brave.com" 2> /dev/null
+KEY-BASEURL=$BRAVE-BASEURL 2> /dev/null
+
+# change unix permissions and add the correct "system configuration files" SELinux contexts to all repository files
+secure_repo_files() {
+    echo "Securing the repo files against manipulation. Please enter your password one last time."
+    pkexec chown root:root /etc/yum.repos.d/* &&\
+    pkexec chmod 744 /etc/yum.repos.d/* || { echo "Failed to secure the repo files!"; exit 1; }
+    pkexec chcon -R system_u:object_r:system_conf_t:s0 /etc/yum.repos.d/
+}
+
+add_vivaldi_repo() {
+    local arch=$1
+    pkexec sh -c "cat > /etc/yum.repos.d/vivaldi.repo <<'EOF'
+[vivaldi]
+name=vivaldi
+baseurl=https://repo.vivaldi.com/archive/rpm/$arch
+enabled=1
+gpgcheck=1
+gpgkey=https://repo.vivaldi.com/archive/linux_signing_key.pub
+EOF"
+    echo "Vivaldi ($arch) Repo added" &&\
+    secure_repo_files &&\
+    echo "installing..."
+}
+
+# User input for Brave version
+cat <<EOF
+
+======== Browser Install Script ========
+
+Available Browsers:
+1: Brave stable (recommended)
+2: Brave beta
+3: Brave nightly
+4: Vivaldi stable (x86_64) (if unsure, use this)
+5: Vivaldi stable (arm64) (Snapdragon, Apple Silicon, many SOCs)
+6: Vivaldi snapshot (x86_64)
+7: Vivaldi snapshot (arm64)
+
+EOF
+
+read -r -p "Which Browser do you want to install? (1-7): " browser_choice
+echo
+
+# Determine repository URL and GPG key based on user's choice
+
+case "$browser_choice" in
+    1)
+        echo "Downloading Repo and Key, you need to enter a password."
+        curl -LsS $BRAVE-BASEURL/brave-browser.repo -o /tmp/brave-browser-beta.repo || { echo "Failed to download Brave repo."; exit 1; }
+        pkexec mv /tmp/brave-browser.repo /etc/yum.repos.d/brave-browser.repo
+        curl -LsS $KEY-BASEURL/brave-core.asc 2> /dev/null | pkexec tee /etc/pki/rpm-gpg/brave-core.asc > /dev/null || { echo "Failed to download Brave key"; exit 1; }
+        echo "Brave Repo and Key downloaded." &&\
+        echo "installing..." &&\
+        echo &&\
+        secure_repo_files &&\
+        rpm-ostree install brave-browser
+        ;;
+
+    2)
+        echo "Downloading Repo and Key, you need to enter a password."
+        curl -LsS $BRAVE-BASEURL/brave-browser-beta.repo -o /tmp/brave-browser-beta.repo || { echo "Failed to download Brave repo."; exit 1; }
+        pkexec mv /tmp/brave-browser-beta.repo /etc/yum.repos.d/brave-browser-beta.repo
+        curl -LsS $KEY-BASEURL/brave-core-nightly.asc 2> /dev/null | pkexec tee /etc/pki/rpm-gpg/brave-core-nightly.asc > /dev/null || { echo "Failed to download Brave key."; exit 1; }
+        echo "Brave Repo and Key downloaded." &&\
+        echo "installing..." &&\
+        echo &&\
+        secure_repo_files &&\
+        rpm-ostree install brave-browser-beta
+        ;;
+
+    3)
+        echo "Downloading Repo and Key, you need to enter a password."
+        curl -LsS $BRAVE-BASEURL/brave-browser-nightly.repo 2> /dev/null | pkexec tee /etc/yum.repos.d/brave-browser-nightly.repo > /dev/null || { echo "Failed to download Brave repo."; exit 1; }
+        curl -LsS $KEY-BASEURL/brave-core-nightly.asc 2> /dev/null | pkexec tee /etc/pki/rpm-gpg/brave-core-nightly.asc > /dev/null || { echo "Failed to download Brave key"; exit 1; }
+        echo "Brave Repo and Key downloaded." &&\
+        echo "installing..." &&\
+        echo &&\
+        secure_repo_files &&\
+        rpm-ostree install brave-browser-nightly
+        ;;
+    4)
+        add_vivaldi_repo "x86_64" &&\
+        rpm-ostree install vivaldi-stable ;;
+
+    5)
+        add_vivaldi_repo "aarch64" &&\
+        rpm-ostree install vivaldi-stable ;;
+
+    6)
+        add_vivaldi_repo "x86_64" &&\
+        rpm-ostree install vivaldi-snapshot ;;
+
+    7)
+        add_vivaldi_repo "aarch64" &&\
+        rpm-ostree install vivaldi-snapshot ;;
+
+    *)
+        echo "Invalid choice. You can use 'CTRL+c' to exit." &&\
+        read -r -p "Which Browser do you want to install? (1-7): " browser_choice
+        ;;
+esac
