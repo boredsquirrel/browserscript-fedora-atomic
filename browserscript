@@ -11,10 +11,12 @@ KEY_BASEURL=$BRAVE_BASEURL 2> /dev/null
 
 # change unix permissions and add the correct "system configuration files" SELinux contexts to all repository files
 secure_repo_files() {
+    echo
     echo "Securing the repo files against manipulation. Please enter your password one last time."
     pkexec sh -c "chown root:root /etc/yum.repos.d/* && \
                    chmod 744 /etc/yum.repos.d/* && \
                    chcon -R system_u:object_r:system_conf_t:s0 /etc/yum.repos.d/" || { echo "Failed to secure the repo files!"; exit 1; }
+    echo
 }
 
 add_vivaldi_repo() {
@@ -61,9 +63,8 @@ case "$browser_choice" in
         curl -LsS $KEY_BASEURL/brave-core.asc -o /tmp/brave-core.asc || { echo "Failed to download Brave key"; exit 1; }
         pkexec mv /tmp/brave-core.asc /etc/pki/rpm-gpg/brave-core.asc
         echo "Brave Repo and Key downloaded." &&\
-        echo "installing..." &&\
-        echo &&\
         secure_repo_files &&\
+        echo "Installing..." &&\
         rpm-ostree install brave-browser
         ;;
 
@@ -74,9 +75,8 @@ case "$browser_choice" in
         curl -LsS $KEY_BASEURL/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key."; exit 1; }
         pkexec mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
         echo "Brave Repo and Key downloaded." &&\
-        echo "installing..." &&\
-        echo &&\
         secure_repo_files &&\
+        echo "Installing..." &&\
         rpm-ostree install brave-browser-beta
         ;;
 
@@ -87,9 +87,8 @@ case "$browser_choice" in
         curl -LsS $KEY_BASEURL/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key"; exit 1; }
         pkexec mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
         echo "Brave Repo and Key downloaded." &&\
-        echo "installing..." &&\
-        echo &&\
         secure_repo_files &&\
+        echo "Installing..." &&\
         rpm-ostree install brave-browser-nightly
         ;;
 
