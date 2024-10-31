@@ -11,7 +11,6 @@ KEY_BASEURL=$BRAVE_BASEURL 2> /dev/null
 
 # change unix permissions and add the correct "system configuration files" SELinux contexts to all repository files
 secure_repo_files() {
-    echo
     echo "Securing the repo files against manipulation. Please enter your password one last time."
     pkexec sh -c "chown root:root /etc/yum.repos.d/* && \
                    chmod 744 /etc/yum.repos.d/* && \
