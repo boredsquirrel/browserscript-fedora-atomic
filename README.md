@@ -8,8 +8,8 @@ Usage:
 ```bash
 cd ~/.local/bin
 curl -sSLO https://github.com/boredsquirrel/browserscript-fedora-atomic/raw/main/browserscript
-chmod +x braveinstall
-./braveinstall
+chmod +x browserscript
+./browserscript
 ```
 
 example output:
