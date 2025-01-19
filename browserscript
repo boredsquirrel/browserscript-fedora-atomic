@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # this script installs Brave Repo and GPG key or the Vivaldi Repo interactively,
 # sets their permissions to chown root:root and write-protected,
