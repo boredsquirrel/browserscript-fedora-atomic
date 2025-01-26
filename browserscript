@@ -7,13 +7,15 @@ set -euo pipefail
 
 # I silenced all error messages as there where plenty of them. But the commands are all chained together, so if one fails, all fail
 
-BRAVE_BASEURL="https://brave-browser-rpm-release.s3.brave.com" 2> /dev/null
-KEY_BASEURL=$BRAVE_BASEURL 2> /dev/null
+# Brave URLs
+BRAVE_BASEURL="https://brave-browser-rpm-release.s3.brave.com"
+BRAVE_BASEURL_BETA="https://brave-browser-rpm-beta.s3.brave.com"
+BRAVE_BASEURL_NIGHTLY="https://brave-browser-rpm-nightly.s3.brave.com"
 
 # change unix permissions and add the correct "system configuration files" SELinux contexts to all repository files
 secure_repo_files() {
     echo "Securing the repo files against manipulation. Please enter your password one last time."
-    pkexec sh -c "chown root:root /etc/yum.repos.d/* && \
+    run0 sh -c "chown root:root /etc/yum.repos.d/* && \
                    chmod 744 /etc/yum.repos.d/* && \
                    chcon -R system_u:object_r:system_conf_t:s0 /etc/yum.repos.d/" || { echo "Failed to secure the repo files!"; exit 1; }
     echo
@@ -21,7 +23,7 @@ secure_repo_files() {
 
 add_vivaldi_repo() {
     local arch=$1
-    pkexec sh -c "cat > /etc/yum.repos.d/vivaldi.repo <<'EOF'
+    run0 sh -c "cat > /etc/yum.repos.d/vivaldi.repo <<'EOF'
 [vivaldi]
 name=vivaldi
 baseurl=https://repo.vivaldi.com/archive/rpm/$arch
@@ -59,9 +61,9 @@ case "$browser_choice" in
     1)
         echo "Downloading Repo and Key, you need to enter a password."
         curl -LsS $BRAVE_BASEURL/brave-browser.repo -o /tmp/brave-browser.repo || { echo "Failed to download Brave repo."; exit 1; }
-        pkexec mv /tmp/brave-browser.repo /etc/yum.repos.d/brave-browser.repo
-        curl -LsS $KEY_BASEURL/brave-core.asc -o /tmp/brave-core.asc || { echo "Failed to download Brave key"; exit 1; }
-        pkexec mv /tmp/brave-core.asc /etc/pki/rpm-gpg/brave-core.asc
+        run0 mv /tmp/brave-browser.repo /etc/yum.repos.d/brave-browser.repo
+        curl -LsS $BRAVE_BASEURL/brave-core.asc -o /tmp/brave-core.asc || { echo "Failed to download Brave key"; exit 1; }
+        run0 mv /tmp/brave-core.asc /etc/pki/rpm-gpg/brave-core.asc
         echo "Brave Repo and Key downloaded." &&\
         secure_repo_files &&\
         echo "Installing..." &&\
@@ -70,10 +72,10 @@ case "$browser_choice" in
 
     2)
         echo "Downloading Repo and Key, you need to enter a password."
-        curl -LsS $BRAVE_BASEURL/brave-browser-beta.repo -o /tmp/brave-browser-beta.repo || { echo "Failed to download Brave repo."; exit 1; }
-        pkexec mv /tmp/brave-browser-beta.repo /etc/yum.repos.d/brave-browser-beta.repo
-        curl -LsS $KEY_BASEURL/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key."; exit 1; }
-        pkexec mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
+        curl -LsS $BRAVE_BASEURL_BETA/brave-browser-beta.repo -o /tmp/brave-browser-beta.repo || { echo "Failed to download Brave repo."; exit 1; }
+        run0 mv /tmp/brave-browser-beta.repo /etc/yum.repos.d/brave-browser-beta.repo
+        curl -LsS $BRAVE_BASEURL_BETA/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key."; exit 1; }
+        run0 mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
         echo "Brave Repo and Key downloaded." &&\
         secure_repo_files &&\
         echo "Installing..." &&\
@@ -82,10 +84,10 @@ case "$browser_choice" in
 
     3)
         echo "Downloading Repo and Key, you need to enter a password."
-        curl -LsS $BRAVE_BASEURL/brave-browser-nightly.repo -o /tmp/brave-browser-nightly.repo || { echo "Failed to download Brave repo."; exit 1; }
-        pkexec mv /tmp/brave-browser-nightly.repo /etc/yum.repos.d/brave-browser-nightly.repo
-        curl -LsS $KEY_BASEURL/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key"; exit 1; }
-        pkexec mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
+        curl -LsS $BRAVE_BASEURL_NIGHTLY/brave-browser-nightly.repo -o /tmp/brave-browser-nightly.repo || { echo "Failed to download Brave repo."; exit 1; }
+        run0 mv /tmp/brave-browser-nightly.repo /etc/yum.repos.d/brave-browser-nightly.repo
+        curl -LsS $BRAVE_BASEURL_NIGHTLY/brave-core-nightly.asc -o /tmp/brave-core-nightly.asc || { echo "Failed to download Brave key"; exit 1; }
+        run0 mv /tmp/brave-core-nightly.asc /etc/pki/rpm-gpg/brave-core-nightly.asc
         echo "Brave Repo and Key downloaded." &&\
         secure_repo_files &&\
         echo "Installing..." &&\
