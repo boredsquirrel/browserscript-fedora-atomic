@@ -26,11 +26,25 @@ secure_repo_files() {
 }
 
 add_vivaldi_repo() {
-    local arch=$1
     run0 sh -c "cat > /etc/yum.repos.d/vivaldi.repo <<'EOF'
 [vivaldi]
 name=vivaldi
-baseurl=https://repo.vivaldi.com/archive/rpm/$arch
+baseurl=https://repo.vivaldi.com/archive/rpm/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=https://repo.vivaldi.com/archive/linux_signing_key.pub
+EOF"
+    echo "Vivaldi ($arch) Repo added" &&
+        secure_repo_files &&
+        echo "installing..."
+}
+
+
+add_vivaldi_repo_aarch64() {
+    run0 sh -c "cat > /etc/yum.repos.d/vivaldi.repo <<'EOF'
+[vivaldi]
+name=vivaldi
+baseurl=https://repo.vivaldi.com/archive/rpm/aarch64
 enabled=1
 gpgcheck=1
 gpgkey=https://repo.vivaldi.com/archive/linux_signing_key.pub
@@ -123,22 +137,22 @@ case "$browser_choice" in
     ;;
 
 4)
-    add_vivaldi_repo "x86_64" &&
+    add_vivaldi_repo &&
         rpm-ostree install vivaldi-stable
     ;;
 
 5)
-    add_vivaldi_repo "aarch64" &&
+    add_vivaldi_repo_aarch64 &&
         rpm-ostree install vivaldi-stable
     ;;
 
 6)
-    add_vivaldi_repo "x86_64" &&
+    add_vivaldi_repo &&
         rpm-ostree install vivaldi-snapshot
     ;;
 
 7)
-    add_vivaldi_repo "aarch64" &&
+    add_vivaldi_repo_aarch64 &&
         rpm-ostree install vivaldi-snapshot
     ;;
 
