@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# detect architecture early to avoid "unbound variable" when referenced later
+arch="$(uname -m)"
+
 # this script installs Brave Repo and GPG key or the Vivaldi Repo interactively,
 # sets their permissions to chown root:root and write-protected,
 # and installs Brave stable, beta, nightly or Vivaldi using rpm-ostree
